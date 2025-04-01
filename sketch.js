@@ -7,7 +7,11 @@ let textS=24;
 let font;
 let currentMatches=0;
 let grow=false;
+let growth_started;
+let growth_duration=5000;
 let started=false;
+
+
 function preload() {
   font = loadFont('Rubik-Regular.ttf');
 }
@@ -45,6 +49,7 @@ function draw() {
         currentSentence++;
         if(currentSentence>=sentences.length){
           grow=true;
+          growth_started=millis();
           // currentSentence=sentences.length-1;
         } 
       }
@@ -52,6 +57,9 @@ function draw() {
     for (let i=0;i<letters.length;i++){
       // text(letters[i].letter,letters[i].x,letters[i].y);
       letters[i].grow();
+      if(letters[i].match && millis()-growth_started<growth_duration){
+        letters[i].update();
+      }
     }
   }
 
@@ -60,6 +68,7 @@ function draw() {
 function mouseClicked(){
 
 }
+
 
 function keyPressed(){
   started=true;
@@ -143,7 +152,7 @@ function createLetter(l){
   };
 
   this.grow=function(){
-    fill(255,255,255,20)
+    fill(255,255,255,10)
     noStroke();
     push();
     translate(this.x,this.y);
