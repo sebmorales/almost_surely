@@ -10,6 +10,8 @@ let grow=false;
 let growth_started;
 let growth_duration=5000;
 let started=false;
+let mobile=false;
+
 
 
 function preload() {
@@ -24,6 +26,12 @@ function setup() {
     fill(255);  
     textFont(font);
     textSize(textS/2);
+    if(width<700){
+      mobile=true;
+      sentences=sentences_mobile;
+      textS-=7
+      margin/=3;
+    }
     for(let i=0;i<sentences.length;i++){
       processedSentences.push(new sentence(sentences[i]));
       // console.log(processedSentences[i].letters);
@@ -68,7 +76,19 @@ function draw() {
 function mouseClicked(){
 
 }
+function touchStarted(){
+  if(mobile){
+      started=true;
 
+      let l=['q','w','e','r','t','y','u','i','o','p',
+      'a','s','d','f','g','h','j','k','l',
+      'z','x','c','v','b','n','m',',','.','?'];
+
+      for(let i=0;i<5;i++){
+          letters.push(new createLetter(p.random(l))); 
+      }
+  }
+}
 
 function keyPressed(){
   started=true;
@@ -193,3 +213,6 @@ class sentence{
   
 }
 
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+}

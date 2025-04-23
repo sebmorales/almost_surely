@@ -1,0 +1,259 @@
+    <!-- Desktop -->
+
+    <html class="js" style="overflow: hidden">
+
+    <body>   
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+
+    <!-- <div style = "justify-content: center"; id='sketchContainer'></div> -->
+
+    <div id="p5-container"></div>
+        <script>
+    const containerElement = document.getElementById('p5-container');
+
+    const sketch = (p) => {
+        let letters=[];
+        let sentenceCount=9;
+        let currentSentence=0;
+        let processedSentences=[];
+        let margin=20;
+        let textS=24;
+        let font;
+        let currentMatches=0;
+        let growing=false;
+        let growth_started;
+        let growth_duration=5000;
+        let started=false;
+        let mobile=false;
+
+        let sentences_mobile=[
+    "During lunch breaks at work",
+    "we normally talk about tv and movies",
+    "today we ran out of shows",
+    "so someone started asking hypotheticals",
+    "",
+    "Would you give up a finger",
+    "to learn a new language?",
+    "",
+    "Kind of sick question,",
+    "but it made me realize",
+    "It would take me some time",
+    "to learn how to type again",
+    "",
+    "But I would trade my pinky",
+    "to have converastions with mushrooms"];
+        
+
+        let sentences=[
+    "During lunch breaks at work we normally talk about tv and movies",
+    "today we ran out of shows so someone started asking hypotheticals",
+    "",
+    "Would you give up a finger to learn a new language?",
+    "",
+    "Kind of sick question, but it made me realize",
+    "It would take me some time to learn how to type again",
+    "But I would trade my pinky to have converastions with mushrooms"];
+
+        p.preload=function(){
+            font = p.loadFont('https://morakana.com/wp-content/uploads/2024/07/SuisseIntl-Regular.woff');
+        }
+
+        p.setup=function(){
+            p.createCanvas(p.windowWidth ,p.windowHeight);
+            // stroke(255);
+            p.background(0)
+            p.noStroke();
+            p.fill(255);  
+            p.textFont(font);
+            p.textSize(textS/2);
+
+            if(p.width<700){
+                mobile=true;
+                sentences=sentences_mobile;
+                textS-=7
+                margin/=3;
+            }
+            
+            for(let i=0;i<sentences.length;i++){
+                processedSentences.push(new sentence(sentences[i]));
+            // console.log(processedSentences[i].letters);
+            }
+            p.angleMode(p.DEGREES);
+            p.text("[type]",p.width/2,p.height/2)
+        }
+
+        p.draw=function() {
+            if(!growing && started){
+                p.background(10,70,0);
+                for (let i=0;i<letters.length;i++){
+                    p.text(letters[i].letter,letters[i].x,letters[i].y);
+                    letters[i].update();
+                    if(letters[i].timeTolive<0){
+                    letters.splice(i,1);
+                    }
+                }// image(img, 0, 0, img.width, img.height);
+
+                if(currentMatches==processedSentences[currentSentence].letters.length){
+                    currentMatches=0;
+                    currentSentence++;
+                    if(currentSentence>=sentences.length){
+                    growing=true;
+                    growth_started=p.millis();
+                    // currentSentence=sentences.length-1;
+                    } 
+                }
+            }else{
+                for (let i=0;i<letters.length;i++){
+                // text(letters[i].letter,letters[i].x,letters[i].y);
+                letters[i].grow();
+                if(letters[i].match && p.millis()-growth_started<growth_duration){
+                    letters[i].update();
+                }
+                }
+            }
+
+        }
+
+        p.touchStarted=function(){
+            if(mobile){
+                started=true;
+
+                let l=['q','w','e','r','t','y','u','i','o','p',
+                'a','s','d','f','g','h','j','k','l',
+                'z','x','c','v','b','n','m',',','.','?'];
+
+                for(let i=0;i<5;i++){
+                    letters.push(new createLetter(p.random(l))); 
+                }
+            }
+        }
+
+        
+        p.keyPressed=function(){
+            started=true;
+            letters.push(new createLetter(p.key));
+            if(p.keyCode===p.LEFT_ARROW){
+                currentSentence--;
+            }
+            if(p.keyCode===p.RIGHT_ARROW){
+                currentSentence++;
+            }
+            if(p.keyCode===p.UP_ARROW){
+                currentSentence--;
+            }
+            if(p.keyCode===p.DOWN_ARROW){
+                currentSentence++;
+            }
+
+            if(p.keyCode===191){
+                letters.push(new createLetter('?'));
+            }
+
+            if(currentSentence>=sentences.length){currentSentence=sentences.length-1;}
+            if(currentSentence<0){currentSentence=0;}
+
+        }
+
+        createLetter=function(l){
+            this.letter=l.toUpperCase();
+            this.x=p.random(p.width);
+            this.y=p.random(p.height);
+            this.numberMatches=-1;
+            this.destX;
+            this.destY=currentSentence*24+24+60;
+            this.timeTolive=100;
+            this.speed=p.random(3,8);
+            this.match=false;
+            this.random_seed=p.random(1000);
+            this.speed_grow=p.random(0.0001,0.1);
+            
+            this.desiredX=function(){
+                let numberMatches=-1;
+                if(!growing){
+                for(let i=0;i<processedSentences[currentSentence].letters.length;i++){
+                    let this_l=this.letter;
+                    let that_l=processedSentences[currentSentence].letters[i].letter;
+                    if(this_l.toUpperCase()==that_l.toUpperCase()){
+                    if(processedSentences[currentSentence].letters[i].match==false){
+                        processedSentences[currentSentence].letters[i].match=true;
+                        this.destX=processedSentences[currentSentence].letters[i].x_pos+margin;
+                        i=sentences[currentSentence].length+1
+                        this.match=true;
+                        currentMatches++;
+                        // console.log("found match");
+                    }
+                    }
+                }
+                }
+            }
+            this.desiredX();
+
+            this.update=function(){
+                if(!this.match){
+                    this.y+=2;
+                    this.x+=p.random(-1,1);
+                    if(this.x>p.width)this.x=0;
+                    if(this.x<0)this.x=p.width;
+                    if(this.y>p.height-20){
+                        this.y=p.height-20;
+                        this.timeTolive--;
+                    }
+                }
+                else{
+
+                if(this.x<this.destX+this.speed && this.x>this.destX-this.speed){this.x=this.destX;}
+                if(this.y<this.destY+this.speed && this.y>this.destY-this.speed){this.y=this.destY;}
+                if(this.x<this.destX){this.x+=this.speed}
+                if(this.x>this.destX){this.x-=this.speed;}
+                if(this.x<this.destX){this.x+=this.speed;}
+                if(this.y<this.destY)this.y+=4;
+                if(this.y>this.destY)this.y-=4;
+                }
+            };
+
+            this.grow=function(){
+                p.fill(255,255,255,10)
+                p.noStroke();
+                p.push();
+                p.translate(this.x,this.y);
+                p.text(this.letter,0,0);
+                // text(this.letter,this.x,this.y);
+                p.rotate(p.noise(0.005 * p.frameCount+this.random_seed))
+                // translate(-this.x,-this.y);
+
+                p.pop();
+                this.x+= -.5+p.noise(this.speed_grow * p.frameCount+this.random_seed);
+                this.y-= p.noise(this.speed_grow*3 * p.frameCount+this.random_seed);
+
+            }
+        }
+        
+
+        class sentence{
+            constructor(s){
+                this.s=s;
+                this.h=sentences.length*textS+textS;
+                this.letters=[];
+                let x_offset=0;
+                for(let i=0;i<s.length;i++){
+                let bbox = font.textBounds(this.s[i].toUpperCase(),0,0);
+                if(this.s[i]!=" "){
+                    this.letters.push({
+                    letter:s[i],
+                    match:false,
+                    x_pos:x_offset
+                    });
+                }
+                x_offset+=bbox.w+4;
+                }
+            }    
+        }
+
+
+
+    }
+
+    new p5(sketch, containerElement);
+        </script>
+    </body>
