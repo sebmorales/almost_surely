@@ -46,7 +46,7 @@ function setup() {
     textAlign(LEFT)
     angleMode(DEGREES);
     if(!mobile){
-      text("[type]",width/2,height/2)
+      text("[Type]",width/2,height/2)
     }
 }
 
