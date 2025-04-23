@@ -31,13 +31,23 @@ function setup() {
       sentences=sentences_mobile;
       textS-=7
       margin/=3;
+      let msg=`Almost Surely requires a keyboard. 
+      This version has been modified to work on mobile.
+
+      Tap to simulate keystrokes.`
+      textAlign(CENTER);
+      text(msg,width/2,height/2)
+
     }
     for(let i=0;i<sentences.length;i++){
       processedSentences.push(new sentence(sentences[i]));
       // console.log(processedSentences[i].letters);
     }
+    textAlign(LEFT)
     angleMode(DEGREES);
-    text("[type]",width/2,height/2)
+    if(!mobile){
+      text("[type]",width/2,height/2)
+    }
 }
 
 
