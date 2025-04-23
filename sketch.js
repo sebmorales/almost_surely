@@ -84,7 +84,7 @@ function touchStarted(){
       'a','s','d','f','g','h','j','k','l',
       'z','x','c','v','b','n','m',',','.','?'];
 
-      for(let i=0;i<5;i++){
+      for(let i=0;i<10;i++){
           letters.push(new createLetter(random(l))); 
       }
   }
