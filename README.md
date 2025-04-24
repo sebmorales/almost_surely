@@ -3,4 +3,6 @@ Almost Surely refers to the probability of someone typing any given text by pres
 
 MORAKANA - Early Spring 2025 
 
-![image](https://github.com/sebmorales/almost_surely/raw/main/images/almost_surely_start.png)
+![image](https://github.com/sebmorales/almost_surely/raw/main/images/almost_surely_start.png)*Screenshot of the poem, almost surely revealing as you type.*
+
+![image](/images/almost_surely_type.png)*Frantically typing.*
